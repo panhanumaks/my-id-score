@@ -79,7 +79,7 @@ const PurchaseDetailScreen = () => {
         voucher: isVoucherActive ? voucher : 0
       })
       .then(({ data }) => {
-        navigation.navigate('Payment', { id: data.order.id });
+        navigation.navigate('Payment', { data });
       })
       .catch(() => {
         Toast.show({

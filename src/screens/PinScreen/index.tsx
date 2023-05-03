@@ -59,7 +59,7 @@ const PinScreen = () => {
   };
 
   useEffect(() => {
-    if (!authData?.member?.image_selfie) {
+    if (!authData?.member?.image_selfie || !authData?.member?.image_nik) {
       navigation.dispatch(
         CommonActions.reset({
           index: 0,

@@ -11,7 +11,9 @@ import { useFormik } from 'formik';
 import BasicLayout from 'layouts/BasicLayout';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import PhoneService from 'services/phone.service';
+import ProductService from 'services/product.service';
 import COLORS from 'utils/colors';
 
 const VerificationPhoneScreen = () => {
@@ -62,10 +64,36 @@ const VerificationPhoneScreen = () => {
           Object.keys(errorData).map((key) => {
             verifyMobileNumber.setFieldError(key, errorData[key][0]);
           });
+          Toast.show({
+            type: 'error',
+            text1: 'Terjadi Kesalahan',
+            text2: JSON.stringify(errorDataResponse.message)
+          });
         })
         .finally(() => setLoading(false));
     }
   });
+
+  const handleResendOtp = () => {
+    setLoading(true);
+    ProductService()
+      .resendPhoneVerification()
+      .then(() => {
+        Toast.show({
+          type: 'success',
+          text1: 'Otp Berhasil Dikirim',
+          text2: 'Cek email kamu ya'
+        });
+      })
+      .catch((e) => {
+        Toast.show({
+          type: 'error',
+          text1: 'Terjadi Kesalahan',
+          text2: JSON.stringify(e)
+        });
+      })
+      .finally(() => setLoading(false));
+  };
 
   const VerifComponent = () => {
     return (
@@ -115,7 +143,7 @@ const VerificationPhoneScreen = () => {
           }
           placeholder="Masukkan nomor"
           prefix="+62"
-          keyboardType='numeric'
+          keyboardType="numeric"
           errorValue={inputNumberFormik.errors.mobile}
         />
         <View style={{ height: 15 }} />
@@ -156,6 +184,7 @@ const VerificationPhoneScreen = () => {
               verifyMobileNumber.setFieldValue('verification_otp', value);
             }}
             errorValue={verifyMobileNumber.errors.verification_otp}
+            resendOtp={handleResendOtp}
           />
         </View>
         <View style={{ height: 15 }} />

@@ -157,6 +157,27 @@ const RegisterScreen = () => {
     }
   });
 
+  const handleResendOtp = () => {
+    setLoading(true);
+    RegisterService()
+      .resendEmailVerification({ email: registerEmailFormik.values.email })
+      .then(() => {
+        Toast.show({
+          type: 'success',
+          text1: 'Otp Berhasil Dikirim',
+          text2: 'Cek email kamu ya'
+        });
+      })
+      .catch((e) => {
+        Toast.show({
+          type: 'error',
+          text1: 'Terjadi Kesalahan',
+          text2: JSON.stringify(e)
+        });
+      })
+      .finally(() => setLoading(false));
+  };
+
   return (
     <BasicLayout>
       <View style={styles.header}>
@@ -272,6 +293,7 @@ const RegisterScreen = () => {
                 errorValue={
                   registerVerificationEmailFormik.errors.verification_otp
                 }
+                resendOtp={handleResendOtp}
               />
               <View style={{ height: 35 }} />
               <Button
@@ -340,7 +362,7 @@ const RegisterScreen = () => {
                 }
                 placeholder="Masukkan Nomor KTP"
                 errorValue={registerFormik.errors.nik}
-                keyboardType='numeric'
+                keyboardType="numeric"
               />
             </View>
             <View style={[styles.inputWrapper, { marginTop: 15 }]}>
@@ -442,7 +464,7 @@ const RegisterScreen = () => {
                 }
                 placeholder="Buat PIN"
                 errorValue={registerFormik.errors.pin}
-                keyboardType='numeric'
+                keyboardType="numeric"
               />
             </View>
             <View style={[styles.inputWrapper, { marginTop: 15 }]}>
@@ -466,7 +488,7 @@ const RegisterScreen = () => {
                 }
                 placeholder="Ulangi PIN"
                 errorValue={registerFormik.errors.pin_confirmation}
-                keyboardType='numeric'
+                keyboardType="numeric"
               />
             </View>
             <View style={[styles.inputWrapper, { marginTop: 25 }]}>
@@ -477,23 +499,25 @@ const RegisterScreen = () => {
                 }
                 isError={registerFormik.errors.term_and_condition}
               >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    marginLeft: 5
-                  }}
-                >
-                  <Typography
-                    fontWeight="bold"
-                    color={COLORS.dark}
-                    label="Saya menyetujui "
-                  />
-                  <Typography
-                    fontWeight="bold"
-                    color={COLORS.primary}
-                    textDecoration="underline"
-                    label="Syarat & Ketentuan"
-                  />
+                <View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      marginLeft: 5
+                    }}
+                  >
+                    <Typography
+                      fontWeight="bold"
+                      color={COLORS.dark}
+                      label="Saya menyetujui "
+                    />
+                    <Typography
+                      fontWeight="bold"
+                      color={COLORS.primary}
+                      textDecoration="underline"
+                      label="Syarat & Ketentuan"
+                    />
+                  </View>
                   <Typography
                     fontWeight="bold"
                     color={COLORS.dark}

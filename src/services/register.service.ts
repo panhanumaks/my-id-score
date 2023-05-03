@@ -69,35 +69,60 @@ const RegisterService = () => {
   const uploadDocument = ({
     id,
     nik,
-    selfie
+    selfie,
+    type
   }: {
     id: string;
     nik: string;
     selfie: string;
+    type: 'nik' | 'selfie';
   }) => {
     const formData = new FormData();
-    formData.append('nik', {
-      uri: nik,
-      name: 'image.jpg',
-      type: 'image/jpeg'
-    });
-    formData.append('selfie', {
-      uri: selfie,
-      name: 'image.jpg',
-      type: 'image/jpeg'
-    });
-    return axiosInstance.post(`/upload-document/${id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
+    if (type === 'nik' && nik !== '') {
+      formData.append('nik', {
+        uri: nik,
+        name: 'nik' + new Date().getTime() + '.jpg',
+        type: 'image/jpeg'
+      });
+    } else {
+      formData.append('nik', '');
+    }
+    if (selfie !== '') {
+      formData.append('selfie', {
+        uri: selfie,
+        name: 'selfie' + new Date().getTime() + '.jpg',
+        type: 'image/jpeg'
+      });
+    } else {
+      formData.append('selfie', '');
+    }
+
+    return axiosInstance.post(
+      `/upload-document-${type === 'nik' ? 'nik' : 'selfie'}/${id}`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       }
-    });
+    );
+  };
+
+  const resendEmailVerification = ({ email }: { email: string }) => {
+    return axiosInstance.post(
+      '/resend-email-verification-otp',
+      JSON.stringify({
+        email
+      })
+    );
   };
 
   return {
     verifyEmail,
     register,
     updateProfile,
-    uploadDocument
+    uploadDocument,
+    resendEmailVerification
   };
 };
 

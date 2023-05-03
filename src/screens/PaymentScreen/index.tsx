@@ -1,5 +1,5 @@
 import {
-    CommonActions,
+  CommonActions,
   ParamListBase,
   useNavigation,
   useRoute
@@ -19,7 +19,8 @@ import numberToRupiah from 'utils/numberToRupiah';
 const PaymentScreen = () => {
   const [paymentMethod, setPaymentMethod] = useState([]);
   const route = useRoute();
-  const { id }: any = route.params;
+  const { data: _data }: any = route.params;
+  const { id }: any = _data.order;
   const [dataOrdering, setDataOrdering] = useState<any>({});
 
   const [loading, setLoading] = useState(false);
@@ -30,7 +31,7 @@ const PaymentScreen = () => {
     setLoading(true);
     ProductService()
       .getPaymentMethod()
-      .then(({ data }) => {
+      .then(({ data }: any) => {
         setPaymentMethod(data.payment_methods['Transfer Virtual Account']);
       })
       .catch(() => {
@@ -49,9 +50,30 @@ const PaymentScreen = () => {
     setLoading(true);
     ProductService()
       .updatePaymentMethod({ id, bank_code })
-      .then(({ data }) => {
+      .then(({ data }: any) => {
         setDataOrdering(data);
         setIsSelectedPayment(true);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const handlePayment = () => {
+    setLoading(true);
+    dataOrdering?.order?.account_number;
+    ProductService()
+      .processPayment({
+        va_number: dataOrdering?.order?.code,
+        amount: dataOrdering?.order?.sub_total
+      })
+      .then(() => {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'BottomTab' }, { name: 'PaymentSuccess' }]
+          })
+        );
       })
       .finally(() => {
         setLoading(false);
@@ -141,7 +163,7 @@ const PaymentScreen = () => {
               >
                 <Typography label="Total Harga: " />
                 <Typography
-                  label={numberToRupiah(dataOrdering?.order?.total || 0)}
+                  label={numberToRupiah(dataOrdering?.order?.sub_total || 0)}
                 />
               </View>
               <View style={{ height: 40 }} />
@@ -151,12 +173,10 @@ const PaymentScreen = () => {
                 fontSize={12}
                 padding={10}
                 title={'Bayar Sekarang'}
-                onPress={() => navigation.dispatch(
-                    CommonActions.reset({
-                        index: 0,
-                        routes: [{ name: 'BottomTab' }, { name: 'PaymentSuccess' }]
-                    })
-                )}
+                loading={loading}
+                onPress={() => {
+                  handlePayment();
+                }}
               />
             </View>
           )}

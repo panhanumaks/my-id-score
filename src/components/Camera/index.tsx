@@ -12,10 +12,10 @@ import {
 import { Camera, useCameraDevices } from 'react-native-vision-camera';
 import COLORS from 'utils/colors';
 
-const CustomCamera = ({ takePhotoResponse, isFront }) => {
+const CustomCamera = ({ takePhotoResponse, isFront }: any) => {
   const [isFocus, setIsFocus] = useState(true);
   const devices = useCameraDevices('wide-angle-camera');
-  const device = isFront ? devices.back : devices.front;
+  const device = isFront ? devices.front : devices.back;
 
   const camera = useRef<any>(null);
 

@@ -47,7 +47,47 @@ const OrderScreen = () => {
       });
   };
 
+  const handlePayment = (_orderData: any) => {
+    ProductService()
+      .processPayment({
+        va_number: _orderData?.code,
+        amount: _orderData?.sub_total
+      })
+      .then(() => {
+        Toast.show({
+          type: 'success',
+          text1: 'Pembayaran Berhasil',
+          text2: 'Mohon Tunggu Beberapa saat untuk perubahan status'
+        });
+      })
+      .catch(({ response }: AxiosError) => {
+        const { message }: any = response?.data as any;
+        Toast.show({
+          type: 'error',
+          text1: 'Proses Refund Kamu Gagal',
+          text2: message
+        });
+      })
+      .finally(() => {
+        ProductService()
+          .getOrder()
+          .then(({ data }) => {
+            setOrderData(data.orders);
+          });
+      });
+  };
+
   const OrderCard = ({ data }: any) => {
+    const generateLabel = () => {
+      let _label = '';
+      if (data.is_payment) {
+        if (data.is_refund) _label = 'Renfund sedang dalam proses';
+        else _label = 'Pembayaran berhasil';
+      } else {
+        _label = 'Sedang Diproses';
+      }
+      return _label;
+    };
     return (
       <View
         style={{
@@ -64,16 +104,7 @@ const OrderScreen = () => {
         </View>
         <View style={{ flexDirection: 'row', marginTop: 5 }}>
           <Typography variant="small" label={'Status : '} />
-          <Typography
-            variant="small"
-            label={
-              data.is_refund
-                ? 'Renfund sedang dalam proses'
-                : data.is_payment
-                ? 'Pembayaran Telah Kami Terima'
-                : 'Sedang Diproses'
-            }
-          />
+          <Typography variant="small" label={generateLabel()} />
         </View>
         <View style={{ flexDirection: 'row', marginTop: 15 }}>
           <Typography variant="small" label={'Created at : '} />
@@ -82,7 +113,26 @@ const OrderScreen = () => {
             label={moment(data.created_at).format('L')}
           />
         </View>
-        {!data.is_refund && (
+        {!data.is_payment && (
+          <View
+            style={{
+              position: 'absolute',
+              top: 15,
+              right: 0,
+              paddingVertical: 20,
+              paddingHorizontal: 10
+            }}
+          >
+            <Pressable onPress={() => handlePayment(data)}>
+              <Typography
+                color={COLORS.primary}
+                fontWeight="bold"
+                label="Bayar Sekarang"
+              />
+            </Pressable>
+          </View>
+        )}
+        {data.is_payment && !data.is_refund ? (
           <View
             style={{
               position: 'absolute',
@@ -100,6 +150,8 @@ const OrderScreen = () => {
               />
             </Pressable>
           </View>
+        ) : (
+          <></>
         )}
       </View>
     );
