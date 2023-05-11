@@ -61,8 +61,8 @@ const Button = (props: ButtonInterface) => {
           : variant === 'primary'
           ? COLORS.primary
           : COLORS.white,
-        opacity: timesPressed ? 0.8 : 1,
-        elevation: variant === 'primary' ? 0 : 1
+        opacity: disabled ? 0.6 : timesPressed ? 0.8 : 1,
+        elevation: variant === 'primary' ? 0 : 4
       }}
       disabled={loading || disabled}
     >

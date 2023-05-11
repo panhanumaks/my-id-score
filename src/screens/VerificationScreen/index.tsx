@@ -9,11 +9,8 @@ import IMAGES from 'assets/images';
 import { AxiosError } from 'axios';
 import Button from 'components/Button';
 import CustomCamera from 'components/Camera';
-import CameraScreen from 'components/Camera';
-import PoweredByOjk from 'components/PoweredByOjk';
 import Typography from 'components/Typography';
 import { useFormik } from 'formik';
-import useAuth from 'hooks/useAuth';
 import BasicLayout from 'layouts/BasicLayout';
 import { useEffect, useState } from 'react';
 import {
@@ -24,6 +21,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { Image as ImageCompressor } from 'react-native-compressor';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
 import RegisterService from 'services/register.service';
@@ -83,17 +81,28 @@ const VerificationScreen = () => {
     }
   });
 
-  const takePhoto = (takePhotoResponse: any) => {
+  const takePhoto = async (takePhotoResponse: any) => {
     if (cameraType === 'nik') {
-      uploadSelfieandKtpFormik.setFieldValue(
-        'nik',
-        'file://' + takePhotoResponse?.path
+      const result = await ImageCompressor.compress(
+        'file://' + takePhotoResponse?.path,
+        {
+          maxHeight: 500,
+          maxWidth: 500,
+          quality: 0.5
+        }
       );
+
+      uploadSelfieandKtpFormik.setFieldValue('nik', result);
     } else {
-      uploadSelfieandKtpFormik.setFieldValue(
-        'selfie',
-        'file://' + takePhotoResponse?.path
+      const result = await ImageCompressor.compress(
+        'file://' + takePhotoResponse?.path,
+        {
+          maxHeight: 500,
+          maxWidth: 500,
+          quality: 0.5
+        }
       );
+      uploadSelfieandKtpFormik.setFieldValue('selfie', result);
     }
     setIsCameraActive(false);
   };
@@ -107,79 +116,100 @@ const VerificationScreen = () => {
               textAlign="center"
               color={COLORS.dark}
               fontWeight="bold"
+              variant="extra-larger"
             />
             <View style={{ height: 25 }} />
+            <Typography
+              label="Foto Kartu Identitas kamu seperti contoh dibawah ini :"
+              color={COLORS.dark}
+            />
+            <View style={{ height: 15 }} />
             <View
               style={{
-                flexDirection: 'row'
+                flexDirection: 'row',
+                justifyContent: 'space-between'
               }}
             >
-              <View style={{ flex: 1 }}>
-                <Image
-                  source={IMAGES.ktp.correctKtp}
-                  style={{
-                    width: Dimensions.get('screen').width / 3,
-                    height: Dimensions.get('screen').width / 3,
-                    resizeMode: 'contain'
-                  }}
-                />
-                <Image
-                  source={IMAGES.ktp.wrongKtp}
-                  style={{
-                    width: Dimensions.get('screen').width / 3,
-                    height: Dimensions.get('screen').width / 3,
-                    resizeMode: 'contain'
-                  }}
+              <Image
+                source={IMAGES.ktp.correctKtp}
+                style={{
+                  width: Dimensions.get('screen').width / 3,
+                  height: Dimensions.get('screen').width / 3,
+                  resizeMode: 'contain'
+                }}
+              />
+              <Image
+                source={IMAGES.ktp.wrongKtp}
+                style={{
+                  width: Dimensions.get('screen').width / 3,
+                  height: Dimensions.get('screen').width / 3,
+                  resizeMode: 'contain'
+                }}
+              />
+            </View>
+
+            <View style={{ flex: 1 }}>
+              <Typography
+                fontWeight="bold"
+                color={COLORS.dark}
+                label={'Panduan Foto KTP '}
+              />
+              <View style={{ height: 5 }} />
+              <View style={{ flexDirection: 'row' }}>
+                <Typography color={COLORS.dark} label={'- '} />
+                <Typography color={COLORS.dark} label={'E-KTP Asli'} />
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+                <Typography color={COLORS.dark} label={'- '} />
+                <Typography
+                  color={COLORS.dark}
+                  label={'E-KTP Atas nama sendiri, bukan nama orang lain'}
                 />
               </View>
-              <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: 'row' }}>
+                <Typography color={COLORS.dark} label={'- '} />
                 <Typography
-                  fontWeight="bold"
                   color={COLORS.dark}
-                  label={'Panduan Foto KTP '}
+                  label={'Tidak Blur Atau Buram'}
                 />
-                <View style={{ height: 5 }} />
-                <View style={{ flexDirection: 'row' }}>
-                  <Typography color={COLORS.dark} label={'- '} />
-                  <Typography color={COLORS.dark} label={'E-KTP Asli'} />
-                </View>
-                <View style={{ flexDirection: 'row' }}>
-                  <Typography color={COLORS.dark} label={'- '} />
-                  <Typography
-                    color={COLORS.dark}
-                    label={'E-KTP Atas nama sendiri, bukan nama orang lain'}
-                  />
-                </View>
-                <View style={{ flexDirection: 'row' }}>
-                  <Typography color={COLORS.dark} label={'- '} />
-                  <Typography
-                    color={COLORS.dark}
-                    label={'Tidak Blur Atau Buram'}
-                  />
-                </View>
-                <View style={{ height: 15 }} />
-                <TouchableOpacity
+              </View>
+              <View style={{ height: 15 }} />
+
+              {uploadSelfieandKtpFormik.values.nik && (
+                <Image
+                  source={{
+                    uri: uploadSelfieandKtpFormik.values.nik
+                  }}
+                  style={{
+                    width: Dimensions.get('screen').width / 3,
+                    height: Dimensions.get('screen').width / 4.2,
+                    resizeMode: 'cover',
+                    borderRadius: 5,
+                    alignSelf: 'center',
+                    marginBottom: 15
+                  }}
+                />
+              )}
+
+              <View
+                style={{
+                  width: 150,
+                  alignSelf: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <Button
                   onPress={() => {
                     setIsFrontCamera(false);
                     setIsCameraActive(true);
                     setCameraType('nik');
                   }}
-                >
-                  <Image
-                    source={
-                      uploadSelfieandKtpFormik.values.nik
-                        ? {
-                            uri: uploadSelfieandKtpFormik.values.nik
-                          }
-                        : IMAGES.ktp.uploadKtp
-                    }
-                    style={{
-                      width: Dimensions.get('screen').width / 3,
-                      height: Dimensions.get('screen').width / 4.2,
-                      resizeMode: 'cover'
-                    }}
-                  />
-                </TouchableOpacity>
+                  variant={'secondary'}
+                  radius={8}
+                  fontSize={12}
+                  title={'Unggah Foto KTP'}
+                  loading={loading}
+                />
               </View>
             </View>
           </View>
@@ -188,17 +218,18 @@ const VerificationScreen = () => {
           <View>
             <Typography
               label="Verifikasi Wajah"
-              textAlign="center"
               color={COLORS.dark}
               fontWeight="bold"
+              variant="extra-larger"
             />
-            <View style={{ height: 25 }} />
+            <View style={{ height: 50 }} />
             <TouchableOpacity
               onPress={() => {
                 setIsFrontCamera(true);
                 setIsCameraActive(true);
                 setCameraType('selfie');
               }}
+              style={{alignItems : 'center', justifyContent: 'center'}}
             >
               <Image
                 source={
@@ -211,7 +242,8 @@ const VerificationScreen = () => {
                 style={{
                   width: Dimensions.get('screen').width / 3,
                   height: Dimensions.get('screen').width / 3,
-                  resizeMode: 'cover'
+                  resizeMode: 'cover',
+                  borderRadius: uploadSelfieandKtpFormik.values.selfie ? 15 : 0
                 }}
               />
             </TouchableOpacity>
@@ -219,20 +251,27 @@ const VerificationScreen = () => {
         )}
 
         <View style={{ height: 40 }} />
+      </ScrollView>
+      <View style={{ padding: 20 }}>
         <Button
           onPress={() => uploadSelfieandKtpFormik.handleSubmit()}
           variant={'primary'}
           radius={8}
           title={'Lanjutkan'}
           loading={loading}
+          disabled={
+            !isNikUploaded
+              ? !uploadSelfieandKtpFormik.values.nik
+              : !uploadSelfieandKtpFormik.values.selfie
+          }
         />
-        <PoweredByOjk />
-        {isCameraActive ? (
-          <CustomCamera takePhotoResponse={takePhoto} isFront={isFrontCamera} />
-        ) : (
-          <></>
-        )}
-      </ScrollView>
+      </View>
+
+      {isCameraActive ? (
+        <CustomCamera takePhotoResponse={takePhoto} isFront={isFrontCamera} />
+      ) : (
+        <></>
+      )}
     </BasicLayout>
   );
 };

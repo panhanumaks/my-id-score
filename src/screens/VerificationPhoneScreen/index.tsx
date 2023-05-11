@@ -67,7 +67,7 @@ const VerificationPhoneScreen = () => {
           Toast.show({
             type: 'error',
             text1: 'Terjadi Kesalahan',
-            text2: JSON.stringify(errorDataResponse.message)
+            text2: errorDataResponse.message || ''
           });
         })
         .finally(() => setLoading(false));

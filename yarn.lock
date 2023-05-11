@@ -1464,6 +1464,11 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@nomi9995/react-native-image-compressor@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@nomi9995/react-native-image-compressor/-/react-native-image-compressor-0.0.2.tgz#b5fb28384b3d6ad3264aea59e7aa764da22d879e"
+  integrity sha512-l81Fkmy760j3bSvlYvQqDBQZxqPAuuEM6qY/IkUFJI77pPPUVEKA0/C62zBc7/GUvWrSZm3/yablYmUePIHb4A==
+
 "@ory/client@^1.1.24":
   version "1.1.25"
   resolved "https://registry.yarnpkg.com/@ory/client/-/client-1.1.25.tgz#f282b2767f491b3efcc1e9a60333edaff4763d9d"
@@ -7240,6 +7245,11 @@ react-native-codegen@^0.71.5:
     flow-parser "^0.185.0"
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
+
+react-native-compressor@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/react-native-compressor/-/react-native-compressor-1.6.1.tgz#f1e4b765f172c649a453f39b3b7478554f825596"
+  integrity sha512-SmyRPWIQY7RPz50bXkkhLcIjoMMIB62rJJls9cG7XCeMIN/I8TFijmXZjEWrgzRlUMBa0JMr7AIXSLvcMp9hfA==
 
 react-native-gradle-plugin@^0.71.17:
   version "0.71.17"

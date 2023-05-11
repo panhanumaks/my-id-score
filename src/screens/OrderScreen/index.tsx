@@ -81,7 +81,7 @@ const OrderScreen = () => {
     const generateLabel = () => {
       let _label = '';
       if (data.is_payment) {
-        if (data.is_refund) _label = 'Renfund sedang dalam proses';
+        if (data.is_refund) _label = 'Refund sedang dalam proses';
         else _label = 'Pembayaran berhasil';
       } else {
         _label = 'Sedang Diproses';
